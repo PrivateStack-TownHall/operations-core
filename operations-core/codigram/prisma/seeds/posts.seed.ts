@@ -1,7 +1,5 @@
-export async function seedPosts(prisma: any) {
-  const users = await prisma.user.findMany({ where: { role: 'MEMBER' } });
-  const categories = await prisma.postCategory.findMany();
-  if (users.length === 0 || categories.length === 0) return;
+export async function seedPosts(prisma: any, users: any[], categories: any[]) {
+  const members = users.filter((u) => u.role === 'MEMBER');
 
   const captions = [
     'Beautiful sunset at the beach today! 🌅',
@@ -10,12 +8,16 @@ export async function seedPosts(prisma: any) {
     'Morning coffee hits different ☕',
   ];
 
-  for (const caption of captions) {
-    const author = users[Math.floor(Math.random() * users.length)];
-    const category = categories[Math.floor(Math.random() * categories.length)];
+  const posts: any[] = [];
+  for (let i = 0; i < captions.length; i++) {
+    const author = members[i % members.length];
+    const category = categories[i % categories.length];
 
-    await prisma.post.create({
-      data: { userId: author.id, categoryId: category.id, caption },
+    const post = await prisma.post.create({
+      data: { userId: author.id, categoryId: category.id, caption: captions[i] },
     });
+    posts.push(post);
   }
+
+  return posts;
 }
