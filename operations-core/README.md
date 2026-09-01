@@ -1,98 +1,55 @@
-# 👑 Kings Brew
+# 🏢 Operations Core
 
-<p align="center">
-  <img src="./assets/banner.png" alt="Kings Brew Banner" />
-</p>
+Kumpulan 5 aplikasi backend API independen yang berbagi **1 database Neon PostgreSQL** yang sama, dengan tabel `users` yang di-share lintas app.
 
-<p align="center">
-  <strong>Brew. Order. Deliver.</strong>
-</p>
+## Aplikasi
 
-Kings Brew is a modern coffee ordering platform created as a backend study case project to simulate a real-world coffee commerce ecosystem. The project focuses on implementing scalable backend architecture, authentication, product management, shopping cart workflows, order processing, and payment handling using modern web development technologies.
+| App | Deskripsi | Port default | Admin default |
+|---|---|---|---|
+| `pineapple-stack/` | Forum diskusi | 3001 | admin@pineapplestack.com |
+| `codigram/` | Media sosial | 3002 | admin@codigram.com |
+| `m-ployee/` | Sistem informasi HR | 3003 | admin@mployee.com |
+| `leather-shelf/` | Manajemen perpustakaan | 3004 | admin@leathershelf.com |
+| `waretrack/` | Manajemen inventori gudang | 3005 | admin@waretrack.com |
 
-Inspired by premium coffee culture and the vibrant atmosphere of Sydney, Kings Brew combines elegant branding with practical software engineering concepts, making it an ideal learning project for developers exploring enterprise-level API development.
+Semua user seed pakai password **`123`**.
 
-## ☕ Core Features
+## Stack
 
-- Authentication & Authorization
-- Categories Management
-- Products Management
-- Product Images
-- Favorites
-- Reviews & Ratings
-- Shopping Cart
-- Checkout Process
-- Orders Management
-- Payments Management
-- Order Status Tracking
-- Audit Logging
+NestJS + TypeScript + Prisma ORM + PostgreSQL (Neon) + JWT Auth + Swagger.
 
-## 🏗️ Database Architecture
+## Arsitektur
 
-The system is built around 12 core entities:
+- **1 database fisik**, `schema.prisma` **identik checksum-nya** di kelima app (lihat `prisma/schema.prisma` masing-masing)
+- **Tabel `users` di-share** — 1 akun bisa dipakai lintas app. Role global: `MEMBER` (default register) / `ADMIN`
+- **Tabel `audit_logs` & `notifications` di-share** (generik, ada kolom `appType` buat audit log)
+- Tabel domain masing-masing app (`threads`, `posts`, `products`, `books`, `employee_profiles`, dst) **tidak** di-share
 
-- Users
-- Categories
-- Products
-- Product Images
-- Favorites
-- Cart Items
-- Orders
-- Order Items
-- Payments
-- Reviews
-- Order Status Histories
-- Audit Logs
+## Menjalankan (per app)
 
-## 🔄 Customer Journey
+```bash
+cd <nama-app>
+npm install
+cp .env.example .env
+# isi DATABASE_URL (Neon) - SAMA PERSIS di kelima app
+# isi JWT_SECRET
 
-```text
-Register
-   ↓
-Login
-   ↓
-Browse Products
-   ↓
-Add To Favorites
-   ↓
-Add To Cart
-   ↓
-Checkout
-   ↓
-Create Order
-   ↓
-Create Payment
-   ↓
-Order Processing
-   ↓
-Completed Order
+npx prisma generate
+
+# migration CUKUP dijalankan SEKALI dari salah satu app (misal pineapple-stack),
+# app lain tinggal `prisma generate` aja (migration history-nya udah sama di DB yang sama)
+npx prisma migrate dev --name init
+
+npm run db:seed
+npm run start:dev
+npm run test
 ```
 
-## 🚀 Technology Stack
+Swagger UI tersedia di `http://localhost:<port>/api` tiap app setelah `start:dev`.
 
-- NestJS
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- JWT Authentication
-- Swagger API Documentation
+## Catatan Migration
 
-## 🎯 Learning Objectives
-
-Kings Brew is designed to help developers understand:
-
-- Modular NestJS Architecture
-- REST API Development
-- Database Relationships
-- Authentication & Authorization
-- E-Commerce Workflows
-- Transaction Management
-- Backend Best Practices
-- Real-World Project Structure
-
----
-
-<p align="center">
-  <strong>👑 Kings Brew</strong><br/>
-  Modern Coffee Ordering Platform Study Case
-</p>
+Karena kelima app connect ke database fisik yang sama:
+1. Jalankan `npx prisma migrate dev --name init` **cuma dari satu app**
+2. Copy folder `prisma/migrations/` yang dihasilkan ke keempat app lain (biar `schema.prisma` + migration history-nya tetap identik)
+3. App lain cukup `npx prisma generate` (gak perlu migrate lagi, tabelnya udah ada di database yang sama)
