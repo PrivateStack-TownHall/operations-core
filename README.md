@@ -4,13 +4,13 @@ Kumpulan 5 aplikasi backend API independen yang berbagi **1 database Neon Postgr
 
 ## Aplikasi
 
-| App                | Deskripsi                  | Port default | Admin default            |
-| ------------------ | -------------------------- | ------------ | ------------------------ |
-| `pineapple-stack/` | Forum diskusi              | 3001         | admin@pineapplestack.com |
-| `codigram/`        | Media sosial               | 3002         | admin@codigram.com       |
-| `m-ployee/`        | Sistem informasi HR        | 3003         | admin@mployee.com        |
-| `leather-shelf/`   | Manajemen perpustakaan     | 3004         | admin@leathershelf.com   |
-| `waretrack/`       | Manajemen inventori gudang | 3005         | admin@waretrack.com      |
+| App | Deskripsi | Port default | Admin default |
+|---|---|---|---|
+| `pineapple-stack/` | Forum diskusi | 3001 | admin@pineapplestack.com |
+| `codigram/` | Media sosial | 3002 | admin@codigram.com |
+| `m-ployee/` | Sistem informasi HR | 3003 | admin@mployee.com |
+| `leather-shelf/` | Manajemen perpustakaan | 3004 | admin@leathershelf.com |
+| `waretrack/` | Manajemen inventori gudang | 3005 | admin@waretrack.com |
 
 Semua user seed pakai password **`123`**.
 
@@ -50,7 +50,6 @@ Swagger UI tersedia di `http://localhost:<port>/api` tiap app setelah `start:dev
 ## Catatan Migration
 
 Karena kelima app connect ke database fisik yang sama:
-
 1. Jalankan `npx prisma migrate dev --name init` **cuma dari satu app**
 2. Copy folder `prisma/migrations/` yang dihasilkan ke keempat app lain (biar `schema.prisma` + migration history-nya tetap identik)
 3. App lain cukup `npx prisma generate` (gak perlu migrate lagi, tabelnya udah ada di database yang sama)
