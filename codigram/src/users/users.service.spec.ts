@@ -18,18 +18,38 @@ describe('UsersService', () => {
 
   afterEach(() => jest.clearAllMocks());
 
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
+
   describe('findByEmail', () => {
     it('returns the user when found', async () => {
-      prisma.user.findUnique.mockResolvedValue({ id: 'user-1' });
+      prisma.user.findUnique.mockResolvedValue({ id: 'user-1', email: 'a@example.com' });
       const result = await service.findByEmail('a@example.com');
       expect(result?.id).toBe('user-1');
+    });
+
+    it('returns null when not found', async () => {
+      prisma.user.findUnique.mockResolvedValue(null);
+      const result = await service.findByEmail('missing@example.com');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('findById', () => {
+    it('queries by id', async () => {
+      prisma.user.findUnique.mockResolvedValue({ id: 'user-1' });
+      await service.findById('user-1');
+      expect(prisma.user.findUnique).toHaveBeenCalledWith({ where: { id: 'user-1' } });
     });
   });
 
   describe('createMember', () => {
-    it('always creates with role MEMBER', async () => {
+    it('always creates with role MEMBER regardless of caller intent', async () => {
       prisma.user.create.mockResolvedValue({ id: 'user-1', role: 'MEMBER' });
-      await service.createMember({ fullName: 'Dina', email: 'dina@example.com', password: 'hashed' });
+
+      await service.createMember({ fullName: 'Budi', email: 'budi@example.com', password: 'hashed' });
+
       expect(prisma.user.create).toHaveBeenCalledWith({
         data: expect.objectContaining({ role: 'MEMBER' }),
       });
@@ -37,10 +57,11 @@ describe('UsersService', () => {
   });
 
   describe('findAll', () => {
-    it('returns all users', async () => {
-      prisma.user.findMany.mockResolvedValue([{ id: 'user-1' }]);
+    it('returns all users ordered by createdAt desc', async () => {
+      prisma.user.findMany.mockResolvedValue([{ id: 'user-1' }, { id: 'user-2' }]);
       const result = await service.findAll();
-      expect(result).toHaveLength(1);
+      expect(result).toHaveLength(2);
+      expect(prisma.user.findMany).toHaveBeenCalledWith({ orderBy: { createdAt: 'desc' } });
     });
   });
 });

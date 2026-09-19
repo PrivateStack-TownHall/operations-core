@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import {
+  appScope,
+  usersOfThisApp,
+} from '../../common/scope/app-scope';
 import { StatsResponseDto } from './dto/stats-response.dto';
 
 @Injectable()
@@ -23,10 +27,10 @@ export class StatsService {
       this.prisma.postCategory.count(),
       this.prisma.postComment.count(),
       this.prisma.postLike.count(),
-      this.prisma.user.count(),
-      this.prisma.user.count({ where: { role: 'ADMIN' } }),
-      this.prisma.notification.count(),
-      this.prisma.notification.count({ where: { isRead: false } }),
+      this.prisma.user.count({ where: usersOfThisApp }),
+      this.prisma.user.count({ where: { ...usersOfThisApp, role: 'ADMIN' } }),
+      this.prisma.notification.count({ where: appScope }),
+      this.prisma.notification.count({ where: { ...appScope, isRead: false } }),
       this.prisma.post.findFirst({
         orderBy: { createdAt: 'desc' },
         select: { createdAt: true },

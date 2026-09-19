@@ -2,7 +2,10 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { StatsService } from './stats.service';
-import { SwaggerSuccess } from '../../common/swagger/swagger-response';
+import {
+  SwaggerInternalServerError,
+  SwaggerSuccess,
+} from '../../common/swagger/swagger-response';
 
 @ApiTags('Stats')
 @Controller('stats')
@@ -10,6 +13,7 @@ export class StatsController {
   constructor(private readonly statsService: StatsService) {}
 
   @Get()
+  @SwaggerInternalServerError()
   @ApiOperation({ summary: 'Get application statistics' })
   @SwaggerSuccess({
     success: true,

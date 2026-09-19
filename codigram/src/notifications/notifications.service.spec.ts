@@ -35,7 +35,7 @@ describe('NotificationsService', () => {
   it('marks all unread notifications as read', async () => {
     await service.markAllRead('user-1');
     expect(prisma.notification.updateMany).toHaveBeenCalledWith({
-      where: { recipientId: 'user-1', isRead: false },
+      where: { recipientId: 'user-1', isRead: false, appType: 'CODIGRAM' },
       data: { isRead: true },
     });
   });

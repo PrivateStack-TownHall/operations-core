@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { appScope } from '../common/scope/app-scope';
 import { CreatePostCommentDto } from './dto/create-post-comment.dto';
 import { UpdatePostCommentDto } from './dto/update-post-comment.dto';
 
@@ -36,6 +37,7 @@ export class PostCommentsService {
     if (post.userId !== userId) {
       await this.prisma.notification.create({
         data: {
+          ...appScope,
           recipientId: post.userId,
           actorId: userId,
           type: 'POST_COMMENTED',

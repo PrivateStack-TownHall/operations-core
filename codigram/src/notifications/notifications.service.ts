@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { appScope } from '../common/scope/app-scope';
 
 @Injectable()
 export class NotificationsService {
@@ -7,7 +8,7 @@ export class NotificationsService {
 
   async findMine(userId: string) {
     const notifications = await this.prisma.notification.findMany({
-      where: { recipientId: userId },
+      where: { recipientId: userId, ...appScope },
       include: {
         actor: { select: { id: true, fullName: true, avatarUrl: true } },
       },
@@ -18,7 +19,7 @@ export class NotificationsService {
 
   async markRead(id: string, userId: string) {
     const notification = await this.prisma.notification.findFirst({
-      where: { id, recipientId: userId },
+      where: { id, recipientId: userId, ...appScope },
     });
     if (!notification) {
       throw new NotFoundException('Notification not found');
@@ -33,7 +34,7 @@ export class NotificationsService {
 
   async markAllRead(userId: string) {
     await this.prisma.notification.updateMany({
-      where: { recipientId: userId, isRead: false },
+      where: { recipientId: userId, isRead: false, ...appScope },
       data: { isRead: true },
     });
     return { message: 'All notifications marked as read' };
