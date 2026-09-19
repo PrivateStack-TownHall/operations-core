@@ -19,24 +19,46 @@ describe('AuditLogsService', () => {
 
   afterEach(() => jest.clearAllMocks());
 
-  it('filters findAll by appType MPLOYEE', async () => {
-    prisma.auditLog.findMany.mockResolvedValue([]);
-    await service.findAll();
-    expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: { appType: 'MPLOYEE' } }),
-    );
+  describe('findAll', () => {
+    it('filters by appType PINEAPPLE', async () => {
+      prisma.auditLog.findMany.mockResolvedValue([]);
+      await service.findAll();
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { appType: 'MPLOYEE' } }),
+      );
+    });
   });
 
-  it('throws NotFoundException when log not found', async () => {
-    prisma.auditLog.findFirst.mockResolvedValue(null);
-    await expect(service.findOne('missing')).rejects.toThrow(NotFoundException);
+  describe('findOne', () => {
+    it('throws NotFoundException when log does not exist', async () => {
+      prisma.auditLog.findFirst.mockResolvedValue(null);
+      await expect(service.findOne('missing')).rejects.toThrow(NotFoundException);
+    });
+
+    it('returns the log when found', async () => {
+      prisma.auditLog.findFirst.mockResolvedValue({ id: 'log-1' });
+      const result = await service.findOne('log-1');
+      expect(result.data.id).toBe('log-1');
+    });
   });
 
-  it('tags created logs with appType MPLOYEE', async () => {
-    prisma.auditLog.create.mockResolvedValue({ id: 'log-1' });
-    await service.create({ userId: 'user-1', action: 'LOGIN', entity: 'User' });
-    expect(prisma.auditLog.create).toHaveBeenCalledWith({
-      data: expect.objectContaining({ appType: 'MPLOYEE' }),
+  describe('findByUser', () => {
+    it('filters by userId and appType', async () => {
+      prisma.auditLog.findMany.mockResolvedValue([]);
+      await service.findByUser('user-1');
+      expect(prisma.auditLog.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({ where: { userId: 'user-1', appType: 'MPLOYEE' } }),
+      );
+    });
+  });
+
+  describe('create', () => {
+    it('always tags the log with appType PINEAPPLE', async () => {
+      prisma.auditLog.create.mockResolvedValue({ id: 'log-1' });
+      await service.create({ userId: 'user-1', action: 'LOGIN', entity: 'User' });
+      expect(prisma.auditLog.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({ appType: 'MPLOYEE' }),
+      });
     });
   });
 });

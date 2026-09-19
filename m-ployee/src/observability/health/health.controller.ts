@@ -2,7 +2,10 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { HealthService } from './health.service';
-import { SwaggerSuccess } from '../../common/swagger/swagger-response';
+import {
+  SwaggerInternalServerError,
+  SwaggerSuccess,
+} from '../../common/swagger/swagger-response';
 
 // Public - sengaja gak pakai JwtAuthGuard, dipakai buat health check
 // eksternal (Render, uptime monitor, dsb) yang gak punya token.
@@ -12,6 +15,7 @@ export class HealthController {
   constructor(private readonly healthService: HealthService) {}
 
   @Get()
+  @SwaggerInternalServerError()
   @ApiOperation({ summary: 'Get application health status' })
   @SwaggerSuccess({
     success: true,
