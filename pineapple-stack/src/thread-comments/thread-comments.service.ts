@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
+import { appScope } from '../common/scope/app-scope';
 import { CreateThreadCommentDto } from './dto/create-thread-comment.dto';
 import { UpdateThreadCommentDto } from './dto/update-thread-comment.dto';
 
@@ -39,6 +40,7 @@ export class ThreadCommentsService {
     if (thread.userId !== userId) {
       await this.prisma.notification.create({
         data: {
+          ...appScope,
           recipientId: thread.userId,
           actorId: userId,
           type: 'THREAD_COMMENTED',

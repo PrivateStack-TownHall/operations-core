@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { AppType } from '@prisma/client';
+import { appScope } from '../common/scope/app-scope';
 
 @Injectable()
 export class AuditLogsService {
@@ -16,7 +16,7 @@ export class AuditLogsService {
   async findAll() {
     return {
       data: await this.prisma.auditLog.findMany({
-        where: { appType: AppType.PINEAPPLE },
+        where: appScope,
         include: { user: { select: this.userSelect } },
         orderBy: { createdAt: 'desc' },
       }),
@@ -25,7 +25,7 @@ export class AuditLogsService {
 
   async findOne(id: string) {
     const auditLog = await this.prisma.auditLog.findFirst({
-      where: { id, appType: AppType.PINEAPPLE },
+      where: { id, ...appScope },
       include: { user: { select: this.userSelect } },
     });
 
@@ -39,7 +39,7 @@ export class AuditLogsService {
   async findByUser(userId: string) {
     return {
       data: await this.prisma.auditLog.findMany({
-        where: { userId, appType: AppType.PINEAPPLE },
+        where: { userId, ...appScope },
         include: { user: { select: this.userSelect } },
         orderBy: { createdAt: 'desc' },
       }),
@@ -55,7 +55,7 @@ export class AuditLogsService {
     entityId?: string;
   }) {
     return this.prisma.auditLog.create({
-      data: { ...data, appType: AppType.PINEAPPLE },
+      data: { ...data, ...appScope },
     });
   }
 }

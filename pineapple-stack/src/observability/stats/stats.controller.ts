@@ -2,7 +2,10 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { StatsService } from './stats.service';
-import { SwaggerSuccess } from '../../common/swagger/swagger-response';
+import {
+  SwaggerInternalServerError,
+  SwaggerSuccess,
+} from '../../common/swagger/swagger-response';
 
 // Public - statistik ringkasan buat dashboard/demo, gak ada data sensitif individual.
 @ApiTags('Stats')
@@ -11,6 +14,7 @@ export class StatsController {
   constructor(private readonly statsService: StatsService) {}
 
   @Get()
+  @SwaggerInternalServerError()
   @ApiOperation({ summary: 'Get application statistics' })
   @SwaggerSuccess({
     success: true,

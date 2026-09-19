@@ -27,7 +27,7 @@ describe('NotificationsService', () => {
       const result = await service.findMine('user-1');
       expect(result.data).toHaveLength(1);
       expect(prisma.notification.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { recipientId: 'user-1' } }),
+        expect.objectContaining({ where: { recipientId: 'user-1', appType: 'PINEAPPLE' } }),
       );
     });
   });
@@ -52,7 +52,7 @@ describe('NotificationsService', () => {
     it('updates all unread notifications for the user', async () => {
       await service.markAllRead('user-1');
       expect(prisma.notification.updateMany).toHaveBeenCalledWith({
-        where: { recipientId: 'user-1', isRead: false },
+        where: { recipientId: 'user-1', isRead: false, appType: 'PINEAPPLE' },
         data: { isRead: true },
       });
     });

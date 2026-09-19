@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { appScope } from '../common/scope/app-scope';
 
 @Injectable()
 export class ThreadLikesService {
@@ -27,6 +28,7 @@ export class ThreadLikesService {
     if (thread.userId !== userId) {
       await this.prisma.notification.create({
         data: {
+          ...appScope,
           recipientId: thread.userId,
           actorId: userId,
           type: 'THREAD_LIKED',
