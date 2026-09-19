@@ -5,6 +5,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { AuditLogsModule } from './audit-logs/audit-logs.module';
+import { ActivitiesModule } from './observability/activities/activities.module';
+import { MonitoringModule } from './observability/monitoring/monitoring.module';
 import { HealthModule } from './observability/health/health.module';
 import { StatsModule } from './observability/stats/stats.module';
 
@@ -42,6 +44,8 @@ import { SettingsModule } from './settings/settings.module';
     AuditLogsModule,
     HealthModule,
     StatsModule,
+    ActivitiesModule,
+    MonitoringModule,
   ],
 })
 export class AppModule {}

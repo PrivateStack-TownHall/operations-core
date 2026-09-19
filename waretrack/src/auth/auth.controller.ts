@@ -24,7 +24,15 @@ export class AuthController {
     description: 'Create a new member account',
   })
   @ApiBody({ type: RegisterDto })
-  @SwaggerCreated({ message: 'Register success', data: {} })
+  @SwaggerCreated({
+    message: 'Register success',
+    data: {
+      id: 'uuid',
+      email: 'budi@pineapplestack.com',
+      fullName: 'Budi Santoso',
+      role: 'MEMBER',
+    },
+  })
   @SwaggerBadRequest('Email already exists')
   register(@Body() dto: RegisterDto) {
     return this.authService.register(dto);
@@ -33,7 +41,16 @@ export class AuthController {
   @Post('login')
   @ApiOperation({ summary: 'Login User' })
   @ApiBody({ type: LoginDto })
-  @SwaggerSuccess({ message: 'Login success', accessToken: 'eyJ...', data: {} })
+  @SwaggerSuccess({
+    message: 'Login success',
+    accessToken: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxx.xxx',
+    data: {
+      id: 'uuid',
+      email: 'budi@pineapplestack.com',
+      fullName: 'Budi Santoso',
+      role: 'MEMBER',
+    },
+  })
   @SwaggerUnauthorized()
   @SwaggerBadRequest('Invalid credentials')
   login(@Body() dto: LoginDto) {
@@ -44,7 +61,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Current User' })
-  @SwaggerSuccess({ message: 'Current user', data: {} })
+  @SwaggerSuccess({
+    message: 'Current user',
+    data: { id: 'uuid', email: 'budi@pineapplestack.com' },
+  })
   @SwaggerUnauthorized()
   me(@Req() req: Request) {
     return { message: 'Current user', data: req.user };
