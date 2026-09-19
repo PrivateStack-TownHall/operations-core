@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
+import {
+  appScope,
+  usersOfThisApp,
+} from '../../common/scope/app-scope';
 import { StatsResponseDto } from './dto/stats-response.dto';
 
 @Injectable()
@@ -25,8 +29,8 @@ export class StatsService {
       this.prisma.publisher.count(),
       this.prisma.genre.count(),
       this.prisma.review.count(),
-      this.prisma.user.count(),
-      this.prisma.user.count({ where: { role: 'ADMIN' } }),
+      this.prisma.user.count({ where: usersOfThisApp }),
+      this.prisma.user.count({ where: { ...usersOfThisApp, role: 'ADMIN' } }),
       this.prisma.review.aggregate({ _avg: { rating: true } }),
       this.prisma.book.aggregate({ _sum: { totalCopies: true } }),
       this.prisma.book.findFirst({
